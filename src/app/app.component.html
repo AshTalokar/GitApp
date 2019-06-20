@@ -1,0 +1,133 @@
+<!-- Header -->
+<div class="header">
+  <select>
+    <option value="NameA2Z">Sort By Name (A-Z)</option>
+    <option value="NameZ2A">Sort By Name (Z-A)</option>
+    <option value="RankUp">Sort By Rank &#x2191;</option>
+    <option value="RankDown">Sort By Rank &#x2193;</option>
+  </select>
+  <input
+    [(ngModel)]="searchStr"
+    type="text"
+    class="searchBox"
+    (keyup)="loadUsers(searchStr)"
+    placeholder=" Search.."
+  /><span class="searchIcon"><i class="fas fa-search"></i></span>
+</div>
+
+<!-- Main content-->
+<div class="container">
+  <br />
+  <!-- Storing Total Result -->
+  <span style="margin-left:18%"
+    >Total Results: {{ usersData?.items.length }}</span
+  >
+  <!-- Repository Toggle Panel -->
+  <div
+    class="row py-2"
+    *ngFor="
+      let user of usersData?.items
+        | paginate: { itemsPerPage: 5, currentPage: p };
+      let i = index
+    "
+  >
+    <div class="col-8 m-auto">
+      <div class="card">
+        <div class="row">
+          <div class="col-3 m-auto">
+            <img
+              src="{{ user.avatar_url }}"
+              class="rounded-circle float-right"
+              alt="..."
+              height="120px"
+              weight="120px"
+            />
+          </div>
+          <div class="col-9">
+            <div class="card-body">
+              <h5 class="card-title">{{ user.login }}</h5>
+              <p>
+                Profile_URL:<a
+                  class="card-text"
+                  target="_blank"
+                  href="{{ user.html_url }}"
+                >
+                  {{ user.html_url }}
+                </a>
+              </p>
+              <p class="card-text">
+                <span>User ID</span>: <span>{{ user.id }}</span
+                ><br />
+                <span>User Score</span>: <span>{{ user.score }}</span>
+              </p>
+              <button class="btn float-right" (click)="togglePanel(i, user.id)">
+                {{ indexExpanded ? "Details" : "Collapse" }}
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="row" id="RepoData">
+          <div class="col-12">
+            <mat-accordion class="prevent-click">
+              <mat-expansion-panel [expanded]="indexExpanded == i">
+                <h5 class="my-2">Repositories</h5>
+                <ul
+                  class="list-group list-group-flush"
+                  *ngFor="let repo of repoData; let inx = index"
+                >
+                  <li
+                    class="list-group-item"
+                    [ngStyle]="{
+                      'background-color': inx % 2 === 0 ? '#f9f9f9' : '#fff'
+                    }"
+                  >
+                    <div class="row">
+                      <div class="col-6">
+                        <span><b>Name</b> : </span>{{ repo.name }}<br />
+                        <span><b>Language</b> : </span>{{ repo.language }}
+                      </div>
+                      <div class="col-6">
+                        <div class="row">
+                          <div class="col-6">
+                            <span class="badge badge-danger">Open Issues</span>
+                            : {{ repo.open_issues }}
+                          </div>
+                          <div class="col-6">
+                            <span class="badge badge-warning">Stars</span> :
+                            {{ repo.stargazers_count }}
+                          </div>
+                          <div class="col-6">
+                            <span class="badge badge-primary">Followers</span>
+                            :
+                            {{ repo.watchers }}
+                          </div>
+                          <div class="col-6">
+                            <span class="badge badge-info">Fork</span> :
+                            {{ repo.forks_count }}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+                </ul>
+              </mat-expansion-panel>
+            </mat-accordion>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Paginator -->
+  <div class="row">
+    <div class="col-8 m-auto">
+      <pagination-controls
+        class="float-right"
+        (pageChange)="p = $event"
+        autoHide="true"
+        responsive="true"
+        previousLabel=""
+        nextLabel=""
+      ></pagination-controls>
+    </div>
+  </div>
+</div>
